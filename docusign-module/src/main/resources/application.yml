@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
+
+spring:
+  datasource:
+#    url: jdbc:postgresql://localhost:5432/docusignrag
+    url: jdbc:postgresql://37.27.202.182:5432/docusign
+    username: docusign
+#    password: docusign
+    password: change_me_now
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+
+# DocuSign + RAG related env placeholders (no values committed)
+docusign:
+  baseUrl: https://demo.docusign.net/restapi  # ${DS_BASE_URL:https://demo.docusign.net/restapi}
+  authServer: # ${DS_AUTH_SERVER:account-d.docusign.com}
+  integrationKey:  #${DS_INTEGRATION_KEY:}
+  userId:  # ${DS_USER_ID:}
+  accountId:  # ${DS_ACCOUNT_ID:}
+  privateKeyB64:  # ${DS_PRIVATE_KEY_B64:}
+  connectSecret:  #${DS_CONNECT_SECRET:}
+
+llm:
+  openai:
+    apiKey:
+    embeddingModel: text-embedding-3-small
+    chatModel: gpt-4o-mini
