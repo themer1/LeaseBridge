@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -70,9 +71,8 @@ public class DocusignController {
     }
 
     /*
-     * This function does main upload
-     *  - Check if file is not empty or is not pdf throw appropraite exceptions
-     *  - store file on the file-system
+     * This end-point allows users to upload document, chunk and store in vector db.
+     * envelop-id and document-id have been used similar to how DocusignDocument works
      *  -
      */
     @PostMapping("/upload")
@@ -124,10 +124,13 @@ public class DocusignController {
 
     private boolean isPdf(MultipartFile file) throws Exception {
         // quick magic check for "%PDF-"
-        byte[] head = file.getInputStream().readNBytes(5);
-        String magic = new String(head);
-        if (!magic.startsWith("%PDF-")) return false;
-
+        try (InputStream in = file.getInputStream()) {
+            byte[] head = in.readNBytes(64);
+            String magic = new String(head, java.nio.charset.StandardCharsets.US_ASCII);
+            if (!magic.contains("%PDF-")) {
+                return false;
+            }
+        }
         // and content-type hint
         String ct = file.getContentType();
         return ct != null && ct.toLowerCase().contains("pdf");

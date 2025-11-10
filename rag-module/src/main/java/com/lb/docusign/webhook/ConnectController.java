@@ -30,5 +30,4 @@ public class ConnectController {
             return headerSigBase64 != null && java.security.MessageDigest.isEqual(calc.getBytes(), headerSigBase64.getBytes());
         } catch (Exception e) { return false; }
     }
-
 }
