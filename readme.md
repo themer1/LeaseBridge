@@ -14,20 +14,15 @@ Key capabilities:
 - Provide a small HTTP API for listing documents, fetching raw PDFs, and triggering ingest.
 
 ## Modules
-- `rag-module` — Overall rag implementation that provides following:
+  - `rag-module` — Overall rag implementation that provides following:
   - DocuSign integration: reads envelopes, lists documents, fetches documents, and saves them to local storage.
   - Ability to direcly upload a PDF document that is chunked, 
 
 ## Key components
-- `DocusignController` (in `docusign-controller/ingest`): contains all API end-points that can be called to ingest and store a document
-
-## CodeT93 comments:
-Since Docusign was not a preferred mechanism to handle documents, following can be done:
-
-- com.lb.docusign/ingest/DocusignController -> Based off requirements, Bulk-upload documents using the `/upload` 
-  - or create a job that does it without `/upload` end-point or provide roles based ability to upload documents.
-- com.lb.docusign/qa/QaController -> Make `/qa/answer` is used to answer all questions. Roles based access would still
-  needed to be implemented 
+- `DocusignController` (in `rag-module/ingest`): contains all API end-points that can be called to ingest and store a document
+- `QaController` (in `main/qa`): contains all API end-points to run search queries related to documents.
+- LLM: `gpt-4o-mini` (can be changed using application.yml config)
+- Database: Postgres SQL
 
 ## Build & run
 In `rag_database` folder there is a dml script for all data tables used in this project.
@@ -37,8 +32,7 @@ In `rag_database` folder there is a dml script for all data tables used in this 
 
 After all properties are loaded, from project root:
 - Build everything:
-  mvn clean install -DskipTests true; # I tested the application using personal documents that I needed to test with
-  (both for unit tests), anyone using this project would need to setup their own unit tests.
+  mvn clean install # Full unit test suite should be established by the user to reflect their specific data and needs.
 
 Run assembled main app:
 - Run the packaged jar:
@@ -69,3 +63,12 @@ docusign:
   clientSecret: YOUR_CLIENT_SECRET
 server:
   port: 8080
+  ```
+
+## CodeT93 comments:
+Since Docusign was not a preferred mechanism to handle documents, following can be done:
+
+- com.lb.docusign/ingest/DocusignController -> Based off requirements, Bulk-upload documents using the `/upload` 
+  - or create a job that does it without `/upload` end-point or provide roles based ability to upload documents.
+- com.lb.docusign/qa/QaController -> Make `/qa/answer` is used to answer all questions. Roles based access would still
+  needed to be implemented 
